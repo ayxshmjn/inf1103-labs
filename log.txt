@@ -1,0 +1,29 @@
+commit e53cc7fccf5d5f5d19d355c74660ae2adb79323e
+Author: Ayush Mahajan <2605673@sit.singaporetech.edu.sg>
+Date:   Fri Sep 4 17:14:36 2026 +0800
+
+    Fun Conditions
+
+commit dbccf5f61ed1e72c6633a3b3eceb7f8e577e03aa
+Author: Ayush Mahajan <2605673@sit.singaporetech.edu.sg>
+Date:   Fri Sep 4 17:12:50 2026 +0800
+
+    Dynamic Profile
+
+commit 1ac97aac79a3573906b7d4085611fe17acfa163b
+Author: Ayush Mahajan <2605673@sit.singaporetech.edu.sg>
+Date:   Fri Sep 4 17:07:10 2026 +0800
+
+    Assignment Variables
+
+commit 91f8ded979cdeee46147912dd00bc30cd852313f
+Author: Ayush Mahajan <2605673@sit.singaporetech.edu.sg>
+Date:   Fri Sep 4 17:00:48 2026 +0800
+
+    Added Profile Variables
+
+commit bee97838597501fc6dfd0ecd58ee8d205aaa7351
+Author: Ayush Mahajan <2605673@sit.singaporetech.edu.sg>
+Date:   Fri Sep 4 16:54:13 2026 +0800
+
+    First Post
