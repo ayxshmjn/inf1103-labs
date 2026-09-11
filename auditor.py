@@ -12,14 +12,15 @@ while True:
         inventory = inventory + stock
         print(f"Current Inventory: {inventory}")
         if inventory > 500:
+            failed_entries += 1
             print("Error: Total Inventory exceeds 500 units")
             
             break
         
         running_total += stock
-    else: 
-        user_input.lower() == 'quit'
+    else:
         failed_entries += 1
+        continue
        
             
 print(f"\n----- Daily Summary ----")
