@@ -1,7 +1,7 @@
 import json
 import os
 
-
+#
 def load_inventory():
     
     if os.path.exists("inventory.json"):
