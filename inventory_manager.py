@@ -3,7 +3,7 @@ import os
 
 
 class Product:
-    """Represents and manages an individual product."""
+    
 
     def __init__(self, product_id, name, price, stock):
         self.__product_id = product_id
