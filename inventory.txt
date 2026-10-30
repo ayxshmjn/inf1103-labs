@@ -1,0 +1,11 @@
+New Total: 35
+Transaction History: [5, 4, 7, 8, 3, 3, 5]
+
+Orders:
+1001, Mouse, 5
+1002, Keyboard, 4
+1003, Headphones, 7
+1004, Speakers, 8
+1005, Iphone, 3
+1006, Samsung, 3
+1007, Earphones, 5

@@ -1,3 +1,45 @@
+commit b7743d2f335fc62196e7762942738ee2bdc3efb1
+Author: Ayush Mahajan <2605673@sit.singaporetech.edu.sg>
+Date:   Wed Oct 7 23:40:55 2026 +0700
+
+    save_inventory working
+
+commit 4c8a6c0952d74c51373b6ce1c27d2868f4475fb7
+Author: Ayush Mahajan <2605673@sit.singaporetech.edu.sg>
+Date:   Wed Oct 7 23:00:11 2026 +0700
+
+    Successfull load_inventory
+
+commit 1c71b5f295b46f06424cfa96834a1462891ca263
+Author: Ayush Mahajan <2605673@sit.singaporetech.edu.sg>
+Date:   Wed Oct 7 22:20:04 2026 +0700
+
+    Creation of Dictionary and Successfull addition of products
+
+commit f4accc590475a30aeac063618718a13d9b76e169
+Author: Ayush Mahajan <2605673@sit.singaporetech.edu.sg>
+Date:   Thu Oct 1 01:34:56 2026 +0800
+
+    Updated Persistent Auditor
+
+commit dfe842947079477ee720c7a134a0f36633068743
+Author: Ayush Mahajan <2605673@sit.singaporetech.edu.sg>
+Date:   Thu Sep 24 17:20:27 2026 +0800
+
+    Final Auditor updated
+
+commit 8281f02de76f121c98a40ebdd82df82990d520bb
+Author: Ayush Mahajan <2605673@sit.singaporetech.edu.sg>
+Date:   Fri Sep 11 17:06:44 2026 +0800
+
+    Updated auditor.py
+
+commit 36a3db6eb2c21ef763997cc14967220b3ce95e90
+Author: Ayush Mahajan <2605673@sit.singaporetech.edu.sg>
+Date:   Fri Sep 11 16:46:39 2026 +0800
+
+    Smart Inventory Auditor
+
 commit e53cc7fccf5d5f5d19d355c74660ae2adb79323e
 Author: Ayush Mahajan <2605673@sit.singaporetech.edu.sg>
 Date:   Fri Sep 4 17:14:36 2026 +0800
