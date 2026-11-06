@@ -14,5 +14,13 @@
       "stock": 100,
       "product_type": "digital",
       "download_size": 50000.0
+   },
+   {
+      "id": "P003",
+      "name": "Wireless Mouse",
+      "price": 30.0,
+      "stock": 13,
+      "product_type": "physical",
+      "weight": 0.5
    }
 ]
