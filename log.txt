@@ -1,18 +1,54 @@
+commit f0cc32e7adff190a4801936844f21bd8d9fdcae1
+Author: Ayush Mahajan <2605673@sit.singaporetech.edu.sg>
+Date:   Fri Nov 6 16:39:09 2026 +0800
+
+    Docker Working
+
+commit 600c581b90fbdc28d81fe28e8057b3cb20e596c3
+Author: Ayush Mahajan <2605673@sit.singaporetech.edu.sg>
+Date:   Fri Nov 6 16:05:02 2026 +0800
+
+    Final Integration done with proper inventory display
+
+commit c30d2468d1de30f8ce098f5a11b0e4ae885e05e8
+Author: Ayush Mahajan <2605673@sit.singaporetech.edu.sg>
+Date:   Fri Nov 6 15:29:55 2026 +0800
+
+    Abstract classes implementation
+
+commit 559802cceaacca036531de094b4715f35d051d15
+Author: Ayush Mahajan <2605673@sit.singaporetech.edu.sg>
+Date:   Fri Nov 6 15:10:43 2026 +0800
+
+    Created PhysicalProduct and DigitalProduct alongisde Method Overriding
+
+commit e8d5e20b13a0b74621cfb8135a1e23142fb3a685
+Author: Ayush Mahajan <2605673@sit.singaporetech.edu.sg>
+Date:   Fri Oct 30 09:58:30 2026 +0800
+
+    Completed OOP Inventory Manager System
+
+commit d4350c9bfc527cbb5e55e3b1beb1fcb3228d44dc
+Author: Ayush Mahajan <2605673@sit.singaporetech.edu.sg>
+Date:   Fri Oct 30 09:41:57 2026 +0800
+
+    Completed OOP Inventory Management System
+
 commit b7743d2f335fc62196e7762942738ee2bdc3efb1
 Author: Ayush Mahajan <2605673@sit.singaporetech.edu.sg>
-Date:   Wed Oct 7 23:40:55 2026 +0700
+Date:   Wed Oct 7 23:22:55 2026 +0700
 
     save_inventory working
 
 commit 4c8a6c0952d74c51373b6ce1c27d2868f4475fb7
 Author: Ayush Mahajan <2605673@sit.singaporetech.edu.sg>
-Date:   Wed Oct 7 23:00:11 2026 +0700
+Date:   Wed Oct 7 23:21:11 2026 +0700
 
     Successfull load_inventory
 
 commit 1c71b5f295b46f06424cfa96834a1462891ca263
 Author: Ayush Mahajan <2605673@sit.singaporetech.edu.sg>
-Date:   Wed Oct 7 22:20:04 2026 +0700
+Date:   Wed Oct 7 23:20:04 2026 +0700
 
     Creation of Dictionary and Successfull addition of products
 
