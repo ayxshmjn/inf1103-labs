@@ -1,15 +1,20 @@
 import json
 import os
+from abc import ABC, abstractmethod
 
 
-class Product:
+class Product(ABC):
     
 
-    def __init__(self, product_id, name, price, stock):
+    def __init__(self, product_id: str, name: str, price: float, stock: int):
         self.__product_id = product_id
         self.__name = name
         self.__price = price
         self.__stock = stock
+
+    @abstractmethod
+    def get_fulfilment_info(self) -> str:
+        pass
 
     
     @property
@@ -57,8 +62,12 @@ class Product:
             stock=int(data["stock"]),
         )
 
+class CanBeShipped(ABC):
+    @abstractmethod
+    def calculate_shipping_cost(self) -> float:
+        pass
 
-class PhysicalProduct(Product):
+class PhysicalProduct(Product, CanBeShipped):
     def __init__(self, product_id: str, name: str, price: float, stock: int, weight: float):
         super().__init__(product_id, name, price, stock)
         self.weight: float = weight
@@ -67,6 +76,13 @@ class PhysicalProduct(Product):
         super().display_information()
         print(f"Weight: {self.weight} kg")
 
+    def get_fulfilment_info(self) -> str:
+        return "Product requires physical shipping"
+
+    def calculate_shipping_cost(self) -> float:
+        # Shipping rule based on weight ($2.00 per kg, min $4.00)
+        return max(5.00, self.weight * 2.50)
+    
 
 class DigitalProduct(Product):
     def __init__(self, product_id: str, name: str, price: float, stock: int, download_size: float):
@@ -76,6 +92,12 @@ class DigitalProduct(Product):
     def display_information(self) -> None:
         super().display_information()
         print(f"Download Size: {self.download_size} MB")
+
+    def get_fulfilment_info(self) -> str:
+        return "Product is delivered digitally"
+
+
+
 
 class Inventory:
     
