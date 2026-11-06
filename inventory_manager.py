@@ -5,7 +5,6 @@ from abc import ABC, abstractmethod
 
 class Product(ABC):
     
-
     def __init__(self, product_id: str, name: str, price: float, stock: int):
         self.__product_id = product_id
         self.__name = name
@@ -16,7 +15,6 @@ class Product(ABC):
     def get_fulfilment_info(self) -> str:
         pass
 
-    
     @property
     def product_id(self):
         return self.__product_id
@@ -53,21 +51,15 @@ class Product(ABC):
             "stock": self.__stock,
         }
 
-    @classmethod
-    def from_dict(cls, data):
-        return cls(
-            product_id=data["id"],
-            name=data["name"],
-            price=float(data["price"]),
-            stock=int(data["stock"]),
-        )
 
 class CanBeShipped(ABC):
     @abstractmethod
     def calculate_shipping_cost(self) -> float:
         pass
 
+
 class PhysicalProduct(Product, CanBeShipped):
+    
     def __init__(self, product_id: str, name: str, price: float, stock: int, weight: float):
         super().__init__(product_id, name, price, stock)
         self.weight: float = weight
@@ -75,16 +67,34 @@ class PhysicalProduct(Product, CanBeShipped):
     def display_information(self) -> None:
         super().display_information()
         print(f"Weight: {self.weight} kg")
+        print(f"Fulfilment: {self.get_fulfilment_info()}")
+        print(f"Est. Shipping Cost: ${self.calculate_shipping_cost():.2f}")
 
     def get_fulfilment_info(self) -> str:
         return "Product requires physical shipping"
 
     def calculate_shipping_cost(self) -> float:
-        # Shipping rule based on weight ($2.00 per kg, min $4.00)
-        return max(5.00, self.weight * 2.50)
-    
+        return max(5.00, self.weight * 2.00)
+
+    def to_dict(self) -> dict:
+        data = super().to_dict()
+        data["product_type"] = "physical"
+        data["weight"] = self.weight
+        return data
+
+    @classmethod
+    def from_dict(cls, data: dict):
+        return cls(
+            product_id=data["id"],
+            name=data["name"],
+            price=float(data["price"]),
+            stock=int(data["stock"]),
+            weight=float(data.get("weight", 0.0)),
+        )
+
 
 class DigitalProduct(Product):
+    
     def __init__(self, product_id: str, name: str, price: float, stock: int, download_size: float):
         super().__init__(product_id, name, price, stock)
         self.download_size: float = download_size
@@ -92,16 +102,30 @@ class DigitalProduct(Product):
     def display_information(self) -> None:
         super().display_information()
         print(f"Download Size: {self.download_size} MB")
+        print(f"Fulfilment: {self.get_fulfilment_info()}")
 
     def get_fulfilment_info(self) -> str:
         return "Product is delivered digitally"
 
+    def to_dict(self) -> dict:
+        data = super().to_dict()
+        data["product_type"] = "digital"
+        data["download_size"] = self.download_size
+        return data
 
+    @classmethod
+    def from_dict(cls, data: dict):
+        return cls(
+            product_id=data["id"],
+            name=data["name"],
+            price=float(data["price"]),
+            stock=int(data["stock"]),
+            download_size=float(data.get("download_size", 0.0)),
+        )
 
 
 class Inventory:
     
-
     def __init__(self):
         self.__products = []
 
@@ -124,23 +148,27 @@ class Inventory:
 
         for product in self.__products:
             product.display_information()
-        print("-" * 50)
+            print("-" * 40)
+        print("========================================")
 
     def get_all_products(self):
         return self.__products
 
 
-def load_inventory():
+def load_inventory() -> Inventory:
     inventory = Inventory()
     if os.path.exists("inventory.json"):
         try:
             with open("inventory.json", "r") as file:
                 data = json.load(file)
-                print("inventory.json found.")
-                print("Inventory loaded successfully.")
                 for item in data:
-                    product = Product.from_dict(item)
+                    p_type = item.get("product_type", "physical")
+                    if p_type == "digital":
+                        product = DigitalProduct.from_dict(item)
+                    else:
+                        product = PhysicalProduct.from_dict(item)
                     inventory.add_product(product)
+                print("Inventory loaded successfully.")
                 return inventory
         except (json.JSONDecodeError, KeyError, ValueError):
             print("Error reading inventory file. Starting with an empty inventory.")
@@ -157,6 +185,14 @@ def save_inventory(inventory):
 
 def add_product_cli(inventory):
     print("\nAdd New Product")
+    print("1. Physical Product")
+    print("2. Digital Product")
+    p_type = input("Select product type (1 or 2): ").strip()
+
+    if p_type not in ["1", "2"]:
+        print("Invalid choice. Operation cancelled.")
+        return
+
     product_id = input("Product ID: ").strip()
 
     if inventory.search_product(product_id) is not None:
@@ -186,7 +222,27 @@ def add_product_cli(inventory):
         print("Invalid stock quantity input.")
         return
 
-    new_product = Product(product_id, name, price, stock)
+    if p_type == "1":
+        try:
+            weight = float(input("Weight (kg): ").strip())
+            if weight < 0:
+                print("Weight cannot be negative.")
+                return
+            new_product = PhysicalProduct(product_id, name, price, stock, weight)
+        except ValueError:
+            print("Invalid weight input.")
+            return
+    else:
+        try:
+            download_size = float(input("Download Size (MB): ").strip())
+            if download_size < 0:
+                print("Download size cannot be negative.")
+                return
+            new_product = DigitalProduct(product_id, name, price, stock, download_size)
+        except ValueError:
+            print("Invalid download size input.")
+            return
+
     inventory.add_product(new_product)
     print("\nProduct added successfully!")
 
@@ -216,6 +272,7 @@ def update_stock_cli(inventory):
 
 
 def search_product_cli(inventory):
+    
     print("\nSearch Product")
     product_id = input("Enter Product ID: ").strip()
 
@@ -230,6 +287,7 @@ def search_product_cli(inventory):
 
 
 def main():
+    
     print("========================================")
     print("INVENTORY MANAGEMENT SYSTEM")
     print("========================================")

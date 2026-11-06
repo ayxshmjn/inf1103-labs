@@ -1,14 +1,18 @@
 [
    {
       "id": "P001",
-      "name": "Laptop",
-      "price": 15.0,
-      "stock": 20
+      "name": "Keyboard",
+      "price": 20.0,
+      "stock": 10,
+      "product_type": "physical",
+      "weight": 4.0
    },
    {
       "id": "P002",
-      "name": "Mouse",
-      "price": 10.0,
-      "stock": 5
+      "name": "Windows 11 OS",
+      "price": 100.0,
+      "stock": 100,
+      "product_type": "digital",
+      "download_size": 50000.0
    }
 ]
