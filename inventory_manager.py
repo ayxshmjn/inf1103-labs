@@ -25,7 +25,7 @@ class Supplier:
     @classmethod
     def from_dict(cls, data: dict) -> "Supplier":
         return cls(
-            supplier_id=data.get("supplier_id", "Unknown"),
+            supplier_id=data.get("supplier_id", "UNKNOWN"),
             name=data.get("name", "Unknown Supplier"),
             contact_email=data.get("contact_email", "N/A"),
         )
@@ -201,7 +201,6 @@ class Inventory:
                 return product
         return None
 
-
     def display_all(self) -> None:
         print("\nCurrent Inventory")
         print("========================================")
@@ -258,12 +257,17 @@ class Order:
         print(f"\nOrder ID: {self.order_id}")
         print("----------------------------------------")
         if not self.order_lines:
-            print("No items present in this order.")
+            print("No items in this order.")
         else:
             for line in self.order_lines:
                 line.display_information()
         print("----------------------------------------")
         print(f"Order Total: ${self.calculate_total():.2f}")
+
+
+def show_product_details(product: Product) -> None:
+    product.display_information()
+    print(product.get_fulfilment_info())
 
 
 def load_inventory() -> Inventory:
@@ -399,7 +403,7 @@ def search_product_cli(inventory: Inventory) -> None:
     if product:
         print("Product Found")
         print("========================================")
-        product.display_information()
+        show_product_details(product)
         print("========================================")
     else:
         print("Product not found.")
