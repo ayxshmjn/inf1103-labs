@@ -27,7 +27,7 @@ class Supplier:
         return cls(
             supplier_id=data.get("supplier_id", "Unknown"),
             name=data.get("name", "Unknown Supplier"),
-            contact_email=data.get("contact_email", "NA"),
+            contact_email=data.get("contact_email", "N/A"),
         )
 
 
@@ -201,8 +201,6 @@ class Inventory:
                 return product
         return None
 
-    def search_product(self, product_id: str) -> Product | None:
-        return self.find_product(product_id)
 
     def display_all(self) -> None:
         print("\nCurrent Inventory")
@@ -219,6 +217,53 @@ class Inventory:
 
     def get_all_products(self) -> list[Product]:
         return self.__products
+
+
+class OrderLine:
+    def __init__(self, product: Product, quantity: int):
+        self.product: Product = product
+        self.quantity: int = quantity
+
+    def calculate_subtotal(self) -> float:
+        return self.product.price * self.quantity
+
+    def display_information(self) -> None:
+        print(
+            f"Product: {self.product.name} (ID: {self.product.product_id}) | "
+            f"Unit Price: ${self.product.price:.2f} | Qty: {self.quantity} | "
+            f"Subtotal: ${self.calculate_subtotal():.2f}"
+        )
+
+
+class Order:
+    def __init__(self, order_id: str):
+        self.order_id: str = order_id
+        self.order_lines: list[OrderLine] = []
+
+    def add_order_line(self, product: Product, quantity: int) -> None:
+        order_line = OrderLine(product, quantity)
+        self.order_lines.append(order_line)
+
+    def remove_order_line(self, product_id: str) -> bool:
+        for line in self.order_lines:
+            if line.product.product_id == product_id:
+                self.order_lines.remove(line)
+                return True
+        return False
+
+    def calculate_total(self) -> float:
+        return sum(line.calculate_subtotal() for line in self.order_lines)
+
+    def display_information(self) -> None:
+        print(f"\nOrder ID: {self.order_id}")
+        print("----------------------------------------")
+        if not self.order_lines:
+            print("No items present in this order.")
+        else:
+            for line in self.order_lines:
+                line.display_information()
+        print("----------------------------------------")
+        print(f"Order Total: ${self.calculate_total():.2f}")
 
 
 def load_inventory() -> Inventory:
@@ -360,6 +405,48 @@ def search_product_cli(inventory: Inventory) -> None:
         print("Product not found.")
 
 
+def remove_product_cli(inventory: Inventory) -> None:
+    print("\nRemove Product")
+    product_id = input("Enter Product ID to remove: ").strip()
+
+    if inventory.remove_product(product_id):
+        print(f"Product ID {product_id} removed successfully!")
+    else:
+        print(f"Product ID {product_id} not found.")
+
+
+def create_order_cli(inventory: Inventory) -> None:
+    print("\nCreate Customer Order")
+    order_id = input("Enter Order ID: ").strip()
+    if not order_id:
+        print("Order ID cannot be empty.")
+        return
+
+    order = Order(order_id)
+
+    while True:
+        product_id = input("Enter Product ID to add (or 'done' to finish): ").strip()
+        if product_id.lower() == "done":
+            break
+
+        product = inventory.find_product(product_id)
+        if not product:
+            print(f"Product ID {product_id} not found in inventory.")
+            continue
+
+        try:
+            quantity = int(input("Enter Quantity: ").strip())
+            if quantity <= 0:
+                print("Quantity must be greater than zero.")
+                continue
+            order.add_order_line(product, quantity)
+            print(f"Added {quantity} x {product.name} to order.")
+        except ValueError:
+            print("Invalid quantity input.")
+
+    order.display_information()
+
+
 def main() -> None:
     print("========================================")
     print("INVENTORY MANAGEMENT SYSTEM")
@@ -373,8 +460,10 @@ def main() -> None:
         print("2. Add Product")
         print("3. Update Stock")
         print("4. Search Product")
-        print("5. Save Inventory")
-        print("6. Exit")
+        print("5. Remove Product")
+        print("6. Create Order")
+        print("7. Save Inventory")
+        print("8. Exit")
         print("----------------------------")
 
         choice = input("Enter option: ").strip()
@@ -388,10 +477,14 @@ def main() -> None:
         elif choice == "4":
             search_product_cli(inventory)
         elif choice == "5":
+            remove_product_cli(inventory)
+        elif choice == "6":
+            create_order_cli(inventory)
+        elif choice == "7":
             print("\nSaving inventory...")
             save_inventory(inventory)
             print("Inventory saved successfully to inventory.json.")
-        elif choice == "6":
+        elif choice == "8":
             print("\nSaving inventory before exit...")
             save_inventory(inventory)
             print("Inventory saved successfully.")
@@ -399,7 +492,7 @@ def main() -> None:
             print("Program terminated.")
             break
         else:
-            print("Invalid option. Please enter a number between 1 and 6.")
+            print("Invalid option. Please enter a number between 1 and 8.")
 
 
 if __name__ == "__main__":
