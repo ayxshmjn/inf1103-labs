@@ -3,52 +3,89 @@ import os
 from abc import ABC, abstractmethod
 
 
+class Supplier:
+    def __init__(self, supplier_id: str, name: str, contact_email: str):
+        self.supplier_id: str = supplier_id
+        self.name: str = name
+        self.contact_email: str = contact_email
+
+    def display_information(self) -> None:
+        print(
+            f"Supplier ID: {self.supplier_id} | Name: {self.name} | "
+            f"Email: {self.contact_email}"
+        )
+
+    def to_dict(self) -> dict:
+        return {
+            "supplier_id": self.supplier_id,
+            "name": self.name,
+            "contact_email": self.contact_email,
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "Supplier":
+        return cls(
+            supplier_id=data.get("supplier_id", "Unknown"),
+            name=data.get("name", "Unknown Supplier"),
+            contact_email=data.get("contact_email", "NA"),
+        )
+
+
 class Product(ABC):
-    
-    def __init__(self, product_id: str, name: str, price: float, stock: int):
-        self.__product_id = product_id
-        self.__name = name
-        self.__price = price
-        self.__stock = stock
+    def __init__(
+        self,
+        product_id: str,
+        name: str,
+        price: float,
+        stock: int,
+        supplier: Supplier,
+    ):
+        self.__product_id: str = product_id
+        self.__name: str = name
+        self.__price: float = price
+        self.__stock: int = stock
+        self.supplier: Supplier = supplier
 
     @abstractmethod
     def get_fulfilment_info(self) -> str:
         pass
 
     @property
-    def product_id(self):
+    def product_id(self) -> str:
         return self.__product_id
 
     @property
-    def name(self):
+    def name(self) -> str:
         return self.__name
 
     @property
-    def price(self):
+    def price(self) -> float:
         return self.__price
 
     @property
-    def stock(self):
+    def stock(self) -> int:
         return self.__stock
 
-    def update_stock(self, new_stock):
+    def update_stock(self, new_stock: int) -> bool:
         if new_stock >= 0:
             self.__stock = new_stock
             return True
         return False
 
-    def display_information(self):
+    def display_information(self) -> None:
         print(
             f"ID: {self.__product_id} | Name: {self.__name} | "
             f"Price: ${self.__price:.2f} | Stock: {self.__stock}"
         )
+        self.supplier.display_information()
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
         return {
             "id": self.__product_id,
             "name": self.__name,
             "price": self.__price,
             "stock": self.__stock,
+            "supplier": self.supplier.to_dict(),
         }
 
 
@@ -59,9 +96,16 @@ class CanBeShipped(ABC):
 
 
 class PhysicalProduct(Product, CanBeShipped):
-    
-    def __init__(self, product_id: str, name: str, price: float, stock: int, weight: float):
-        super().__init__(product_id, name, price, stock)
+    def __init__(
+        self,
+        product_id: str,
+        name: str,
+        price: float,
+        stock: int,
+        supplier: Supplier,
+        weight: float,
+    ):
+        super().__init__(product_id, name, price, stock, supplier)
         self.weight: float = weight
 
     def display_information(self) -> None:
@@ -83,20 +127,30 @@ class PhysicalProduct(Product, CanBeShipped):
         return data
 
     @classmethod
-    def from_dict(cls, data: dict):
+    def from_dict(cls, data: dict) -> "PhysicalProduct":
+        supplier_data = data.get("supplier", {})
+        supplier = Supplier.from_dict(supplier_data)
         return cls(
             product_id=data["id"],
             name=data["name"],
             price=float(data["price"]),
             stock=int(data["stock"]),
+            supplier=supplier,
             weight=float(data.get("weight", 0.0)),
         )
 
 
 class DigitalProduct(Product):
-    
-    def __init__(self, product_id: str, name: str, price: float, stock: int, download_size: float):
-        super().__init__(product_id, name, price, stock)
+    def __init__(
+        self,
+        product_id: str,
+        name: str,
+        price: float,
+        stock: int,
+        supplier: Supplier,
+        download_size: float,
+    ):
+        super().__init__(product_id, name, price, stock, supplier)
         self.download_size: float = download_size
 
     def display_information(self) -> None:
@@ -114,31 +168,43 @@ class DigitalProduct(Product):
         return data
 
     @classmethod
-    def from_dict(cls, data: dict):
+    def from_dict(cls, data: dict) -> "DigitalProduct":
+        supplier_data = data.get("supplier", {})
+        supplier = Supplier.from_dict(supplier_data)
         return cls(
             product_id=data["id"],
             name=data["name"],
             price=float(data["price"]),
             stock=int(data["stock"]),
+            supplier=supplier,
             download_size=float(data.get("download_size", 0.0)),
         )
 
 
 class Inventory:
-    
     def __init__(self):
-        self.__products = []
+        self.__products: list[Product] = []
 
-    def add_product(self, product):
+    def add_product(self, product: Product) -> None:
         self.__products.append(product)
 
-    def search_product(self, product_id):
+    def remove_product(self, product_id: str) -> bool:
+        product = self.find_product(product_id)
+        if product is not None:
+            self.__products.remove(product)
+            return True
+        return False
+
+    def find_product(self, product_id: str) -> Product | None:
         for product in self.__products:
             if product.product_id == product_id:
                 return product
         return None
 
-    def display_all(self):
+    def search_product(self, product_id: str) -> Product | None:
+        return self.find_product(product_id)
+
+    def display_all(self) -> None:
         print("\nCurrent Inventory")
         print("========================================")
         if not self.__products:
@@ -151,7 +217,7 @@ class Inventory:
             print("-" * 40)
         print("========================================")
 
-    def get_all_products(self):
+    def get_all_products(self) -> list[Product]:
         return self.__products
 
 
@@ -177,13 +243,13 @@ def load_inventory() -> Inventory:
     return inventory
 
 
-def save_inventory(inventory):
+def save_inventory(inventory: Inventory) -> None:
     data = [product.to_dict() for product in inventory.get_all_products()]
     with open("inventory.json", "w") as file:
         json.dump(data, file, indent=3)
 
 
-def add_product_cli(inventory):
+def add_product_cli(inventory: Inventory) -> None:
     print("\nAdd New Product")
     print("1. Physical Product")
     print("2. Digital Product")
@@ -195,7 +261,7 @@ def add_product_cli(inventory):
 
     product_id = input("Product ID: ").strip()
 
-    if inventory.search_product(product_id) is not None:
+    if inventory.find_product(product_id) is not None:
         print("Product ID already exists!")
         return
 
@@ -222,13 +288,20 @@ def add_product_cli(inventory):
         print("Invalid stock quantity input.")
         return
 
+    supplier_id = input("Supplier ID: ").strip()
+    supplier_name = input("Supplier Name: ").strip()
+    contact_email = input("Supplier Contact Email: ").strip()
+    supplier = Supplier(supplier_id, supplier_name, contact_email)
+
     if p_type == "1":
         try:
             weight = float(input("Weight (kg): ").strip())
             if weight < 0:
                 print("Weight cannot be negative.")
                 return
-            new_product = PhysicalProduct(product_id, name, price, stock, weight)
+            new_product = PhysicalProduct(
+                product_id, name, price, stock, supplier, weight
+            )
         except ValueError:
             print("Invalid weight input.")
             return
@@ -238,7 +311,9 @@ def add_product_cli(inventory):
             if download_size < 0:
                 print("Download size cannot be negative.")
                 return
-            new_product = DigitalProduct(product_id, name, price, stock, download_size)
+            new_product = DigitalProduct(
+                product_id, name, price, stock, supplier, download_size
+            )
         except ValueError:
             print("Invalid download size input.")
             return
@@ -247,11 +322,11 @@ def add_product_cli(inventory):
     print("\nProduct added successfully!")
 
 
-def update_stock_cli(inventory):
+def update_stock_cli(inventory: Inventory) -> None:
     print("\nUpdate Stock")
     product_id = input("Enter Product ID: ").strip()
 
-    product = inventory.search_product(product_id)
+    product = inventory.find_product(product_id)
     if not product:
         print(f"Product ID {product_id} not found.")
         return
@@ -271,12 +346,11 @@ def update_stock_cli(inventory):
         print("Invalid stock quantity input.")
 
 
-def search_product_cli(inventory):
-    
+def search_product_cli(inventory: Inventory) -> None:
     print("\nSearch Product")
     product_id = input("Enter Product ID: ").strip()
 
-    product = inventory.search_product(product_id)
+    product = inventory.find_product(product_id)
     if product:
         print("Product Found")
         print("========================================")
@@ -286,8 +360,7 @@ def search_product_cli(inventory):
         print("Product not found.")
 
 
-def main():
-    
+def main() -> None:
     print("========================================")
     print("INVENTORY MANAGEMENT SYSTEM")
     print("========================================")
