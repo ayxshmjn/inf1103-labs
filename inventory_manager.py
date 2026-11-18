@@ -40,6 +40,11 @@ class Product(ABC):
         stock: int,
         supplier: Supplier,
     ):
+        if price <= 0:
+            raise ValueError("Price must be greater than zero.")
+        if stock < 0:
+            raise ValueError("Stock quantity cannot be negative.")
+
         self.__product_id: str = product_id
         self.__name: str = name
         self.__price: float = price
@@ -66,11 +71,10 @@ class Product(ABC):
     def stock(self) -> int:
         return self.__stock
 
-    def update_stock(self, new_stock: int) -> bool:
-        if new_stock >= 0:
-            self.__stock = new_stock
-            return True
-        return False
+    def update_stock(self, new_stock: int) -> None:
+        if new_stock < 0:
+            raise ValueError("Stock quantity cannot be negative.")
+        self.__stock = new_stock
 
     def display_information(self) -> None:
         print(
@@ -250,6 +254,8 @@ class StudentDiscount(DiscountStrategy):
 
 class OrderLine:
     def __init__(self, product: Product, quantity: int):
+        if quantity <= 0:
+            raise ValueError("Quantity must be greater than zero.")
         self.product: Product = product
         self.quantity: int = quantity
 
@@ -370,20 +376,9 @@ def add_product_cli(inventory: Inventory) -> None:
 
     try:
         price = float(input("Price: ").strip())
-        if price < 0:
-            print("Price cannot be negative.")
-            return
-    except ValueError:
-        print("Invalid price input.")
-        return
-
-    try:
         stock = int(input("Stock Quantity: ").strip())
-        if stock < 0:
-            print("Stock quantity cannot be negative.")
-            return
     except ValueError:
-        print("Invalid stock quantity input.")
+        print("Invalid price or stock input.")
         return
 
     supplier_id = input("Supplier ID: ").strip()
@@ -402,13 +397,14 @@ def add_product_cli(inventory: Inventory) -> None:
             if extra < 0:
                 print("Download size cannot be negative.")
                 return
-    except ValueError:
-        print("Invalid numeric input.")
+
+        new_product = ProductFactory.create(
+            product_type, product_id, name, price, stock, supplier, extra
+        )
+    except ValueError as err:
+        print(f"Error creating product: {err}")
         return
 
-    new_product = ProductFactory.create(
-        product_type, product_id, name, price, stock, supplier, extra
-    )
     inventory.add_product(new_product)
     print("\nProduct added successfully!")
 
@@ -428,13 +424,10 @@ def update_stock_cli(inventory: Inventory) -> None:
 
     try:
         new_stock = int(input("New Stock Quantity: ").strip())
-        if new_stock < 0:
-            print("Stock cannot be negative.")
-            return
         product.update_stock(new_stock)
         print("Stock updated successfully!")
-    except ValueError:
-        print("Invalid stock quantity input.")
+    except ValueError as err:
+        print(f"Invalid stock input: {err}")
 
 
 def search_product_cli(inventory: Inventory) -> None:
@@ -498,13 +491,10 @@ def create_order_cli(inventory: Inventory) -> None:
 
         try:
             quantity = int(input("Enter Quantity: ").strip())
-            if quantity <= 0:
-                print("Quantity must be greater than zero.")
-                continue
             order.add_order_line(product, quantity)
             print(f"Added {quantity} x {product.name} to order.")
-        except ValueError:
-            print("Invalid quantity input.")
+        except ValueError as err:
+            print(f"Invalid quantity: {err}")
 
     order.display_information()
 
