@@ -218,6 +218,39 @@ class Inventory:
         return self.__products
 
 
+class DiscountStrategy(ABC):
+    @abstractmethod
+    def apply(self, total: float) -> float:
+        pass
+
+
+class NoDiscount(DiscountStrategy):
+    def apply(self, total: float) -> float:
+        return total
+
+
+class PercentageDiscount(DiscountStrategy):
+    def __init__(self, percentage: float):
+        self.percentage: float = percentage
+
+    def apply(self, total: float) -> float:
+        return total * (1 - self.percentage / 100)
+
+
+class BulkDiscount(DiscountStrategy):
+    def __init__(self, threshold: float, amount: float):
+        self.threshold: float = threshold
+        self.amount: float = amount
+
+    def apply(self, total: float) -> float:
+        return total - self.amount if total >= self.threshold else total
+
+
+class StudentDiscount(DiscountStrategy):
+    def apply(self, total: float) -> float:
+        return total * 0.85
+
+
 class OrderLine:
     def __init__(self, product: Product, quantity: int):
         self.product: Product = product
@@ -235,9 +268,15 @@ class OrderLine:
 
 
 class Order:
-    def __init__(self, order_id: str):
+    def __init__(self, order_id: str, discount: DiscountStrategy | None = None):
         self.order_id: str = order_id
         self.order_lines: list[OrderLine] = []
+        self.discount: DiscountStrategy = (
+            discount if discount is not None else NoDiscount()
+        )
+
+    def set_discount(self, discount: DiscountStrategy) -> None:
+        self.discount = discount
 
     def add_order_line(self, product: Product, quantity: int) -> None:
         order_line = OrderLine(product, quantity)
@@ -251,7 +290,8 @@ class Order:
         return False
 
     def calculate_total(self) -> float:
-        return sum(line.calculate_subtotal() for line in self.order_lines)
+        total = sum(line.calculate_subtotal() for line in self.order_lines)
+        return self.discount.apply(total)
 
     def display_information(self) -> None:
         print(f"\nOrder ID: {self.order_id}")
@@ -426,7 +466,23 @@ def create_order_cli(inventory: Inventory) -> None:
         print("Order ID cannot be empty.")
         return
 
-    order = Order(order_id)
+    print("Select Discount:")
+    print("1. No Discount")
+    print("2. 10% Percentage Discount")
+    print("3. Bulk Discount ($20 off $200+)")
+    print("4. Student Discount (15% off)")
+    d_choice = input("Choose discount (1-4): ").strip()
+
+    if d_choice == "2":
+        discount: DiscountStrategy = PercentageDiscount(10)
+    elif d_choice == "3":
+        discount = BulkDiscount(200, 20)
+    elif d_choice == "4":
+        discount = StudentDiscount()
+    else:
+        discount = NoDiscount()
+
+    order = Order(order_id, discount)
 
     while True:
         product_id = input("Enter Product ID to add (or 'done' to finish): ").strip()
