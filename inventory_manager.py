@@ -103,7 +103,7 @@ class PhysicalProduct(Product, CanBeShipped):
         price: float,
         stock: int,
         supplier: Supplier,
-        weight: float,
+        weight: float = 0.0,
     ):
         super().__init__(product_id, name, price, stock, supplier)
         self.weight: float = weight
@@ -126,19 +126,6 @@ class PhysicalProduct(Product, CanBeShipped):
         data["weight"] = self.weight
         return data
 
-    @classmethod
-    def from_dict(cls, data: dict) -> "PhysicalProduct":
-        supplier_data = data.get("supplier", {})
-        supplier = Supplier.from_dict(supplier_data)
-        return cls(
-            product_id=data["id"],
-            name=data["name"],
-            price=float(data["price"]),
-            stock=int(data["stock"]),
-            supplier=supplier,
-            weight=float(data.get("weight", 0.0)),
-        )
-
 
 class DigitalProduct(Product):
     def __init__(
@@ -148,7 +135,7 @@ class DigitalProduct(Product):
         price: float,
         stock: int,
         supplier: Supplier,
-        download_size: float,
+        download_size: float = 0.0,
     ):
         super().__init__(product_id, name, price, stock, supplier)
         self.download_size: float = download_size
@@ -167,18 +154,28 @@ class DigitalProduct(Product):
         data["download_size"] = self.download_size
         return data
 
-    @classmethod
-    def from_dict(cls, data: dict) -> "DigitalProduct":
-        supplier_data = data.get("supplier", {})
-        supplier = Supplier.from_dict(supplier_data)
-        return cls(
-            product_id=data["id"],
-            name=data["name"],
-            price=float(data["price"]),
-            stock=int(data["stock"]),
-            supplier=supplier,
-            download_size=float(data.get("download_size", 0.0)),
-        )
+
+class ProductFactory:
+    @staticmethod
+    def create(
+        product_type: str,
+        product_id: str,
+        name: str,
+        price: float,
+        stock_quantity: int,
+        supplier: Supplier,
+        extra: float = 0.0,
+    ) -> Product:
+        if product_type == "physical":
+            return PhysicalProduct(
+                product_id, name, price, stock_quantity, supplier, extra
+            )
+        elif product_type == "digital":
+            return DigitalProduct(
+                product_id, name, price, stock_quantity, supplier, extra
+            )
+        else:
+            raise ValueError(f"Unknown product type: {product_type}")
 
 
 class Inventory:
@@ -318,10 +315,21 @@ def load_inventory() -> Inventory:
                 data = json.load(file)
                 for item in data:
                     p_type = item.get("product_type", "physical")
-                    if p_type == "digital":
-                        product = DigitalProduct.from_dict(item)
-                    else:
-                        product = PhysicalProduct.from_dict(item)
+                    supplier = Supplier.from_dict(item.get("supplier", {}))
+                    extra = float(
+                        item.get("download_size", 0.0)
+                        if p_type == "digital"
+                        else item.get("weight", 0.0)
+                    )
+                    product = ProductFactory.create(
+                        product_type=p_type,
+                        product_id=item["id"],
+                        name=item["name"],
+                        price=float(item["price"]),
+                        stock_quantity=int(item["stock"]),
+                        supplier=supplier,
+                        extra=extra,
+                    )
                     inventory.add_product(product)
                 print("Inventory loaded successfully.")
                 return inventory
@@ -342,12 +350,13 @@ def add_product_cli(inventory: Inventory) -> None:
     print("\nAdd New Product")
     print("1. Physical Product")
     print("2. Digital Product")
-    p_type = input("Select product type (1 or 2): ").strip()
+    p_choice = input("Select product type (1 or 2): ").strip()
 
-    if p_type not in ["1", "2"]:
+    if p_choice not in ["1", "2"]:
         print("Invalid choice. Operation cancelled.")
         return
 
+    product_type = "physical" if p_choice == "1" else "digital"
     product_id = input("Product ID: ").strip()
 
     if inventory.find_product(product_id) is not None:
@@ -382,31 +391,24 @@ def add_product_cli(inventory: Inventory) -> None:
     contact_email = input("Supplier Contact Email: ").strip()
     supplier = Supplier(supplier_id, supplier_name, contact_email)
 
-    if p_type == "1":
-        try:
-            weight = float(input("Weight (kg): ").strip())
-            if weight < 0:
+    try:
+        if product_type == "physical":
+            extra = float(input("Weight (kg): ").strip())
+            if extra < 0:
                 print("Weight cannot be negative.")
                 return
-            new_product = PhysicalProduct(
-                product_id, name, price, stock, supplier, weight
-            )
-        except ValueError:
-            print("Invalid weight input.")
-            return
-    else:
-        try:
-            download_size = float(input("Download Size (MB): ").strip())
-            if download_size < 0:
+        else:
+            extra = float(input("Download Size (MB): ").strip())
+            if extra < 0:
                 print("Download size cannot be negative.")
                 return
-            new_product = DigitalProduct(
-                product_id, name, price, stock, supplier, download_size
-            )
-        except ValueError:
-            print("Invalid download size input.")
-            return
+    except ValueError:
+        print("Invalid numeric input.")
+        return
 
+    new_product = ProductFactory.create(
+        product_type, product_id, name, price, stock, supplier, extra
+    )
     inventory.add_product(new_product)
     print("\nProduct added successfully!")
 
