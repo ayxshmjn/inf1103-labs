@@ -1,3 +1,4 @@
+import csv
 import json
 import os
 from abc import ABC, abstractmethod
@@ -308,6 +309,62 @@ class Order:
         print(f"Order Total: ${self.calculate_total():.2f}")
 
 
+def get_positive_float(prompt: str) -> float:
+    while True:
+        try:
+            value = float(input(prompt))
+            if value <= 0:
+                print("Please enter a number greater than zero.")
+                continue
+            return value
+        except ValueError:
+            print("Please enter a valid number, e.g. 12.50")
+
+
+def get_non_negative_int(prompt: str) -> int:
+    while True:
+        try:
+            value = int(input(prompt))
+            if value < 0:
+                print("Please enter a number of zero or greater.")
+                continue
+            return value
+        except ValueError:
+            print("Please enter a valid whole number, e.g. 10")
+
+
+def load_products(path: str, inventory: Inventory, supplier: Supplier) -> None:
+    try:
+        file = open(path, newline="")
+    except FileNotFoundError:
+        print(f"Products file not found: {path}")
+    else:
+        loaded = 0
+        with file:
+            reader = csv.reader(file)
+            next(reader, None)  # skip header row
+            for line_num, row in enumerate(reader, start=2):
+                try:
+                    product_type, product_id, name, price_str, stock_str = row
+                    price = float(price_str)
+                    stock_quantity = int(stock_str)
+                    product = ProductFactory.create(
+                        product_type=product_type.strip(),
+                        product_id=product_id.strip(),
+                        name=name.strip(),
+                        price=price,
+                        stock_quantity=stock_quantity,
+                        supplier=supplier,
+                    )
+                    inventory.add_product(product)
+                    loaded += 1
+                except ValueError as err:
+                    print(f"Skipping row {line_num} ({row}): {err}")
+        print(f"{loaded} products loaded.")
+    finally:
+        print("Load attempt finished.")
+
+
 def show_product_details(product: Product) -> None:
     product.display_information()
     print(product.get_fulfilment_info())
@@ -374,39 +431,27 @@ def add_product_cli(inventory: Inventory) -> None:
         print("Product name cannot be empty.")
         return
 
-    try:
-        price = float(input("Price: ").strip())
-        stock = int(input("Stock Quantity: ").strip())
-    except ValueError:
-        print("Invalid price or stock input.")
-        return
+    price = get_positive_float("Price: ")
+    stock = get_non_negative_int("Stock Quantity: ")
 
     supplier_id = input("Supplier ID: ").strip()
     supplier_name = input("Supplier Name: ").strip()
     contact_email = input("Supplier Contact Email: ").strip()
     supplier = Supplier(supplier_id, supplier_name, contact_email)
 
-    try:
-        if product_type == "physical":
-            extra = float(input("Weight (kg): ").strip())
-            if extra < 0:
-                print("Weight cannot be negative.")
-                return
-        else:
-            extra = float(input("Download Size (MB): ").strip())
-            if extra < 0:
-                print("Download size cannot be negative.")
-                return
+    if product_type == "physical":
+        extra = get_positive_float("Weight (kg): ")
+    else:
+        extra = get_positive_float("Download Size (MB): ")
 
+    try:
         new_product = ProductFactory.create(
             product_type, product_id, name, price, stock, supplier, extra
         )
+        inventory.add_product(new_product)
+        print("\nProduct added successfully!")
     except ValueError as err:
         print(f"Error creating product: {err}")
-        return
-
-    inventory.add_product(new_product)
-    print("\nProduct added successfully!")
 
 
 def update_stock_cli(inventory: Inventory) -> None:
@@ -422,12 +467,9 @@ def update_stock_cli(inventory: Inventory) -> None:
     print(f"Name: {product.name}")
     print(f"Current Stock: {product.stock}")
 
-    try:
-        new_stock = int(input("New Stock Quantity: ").strip())
-        product.update_stock(new_stock)
-        print("Stock updated successfully!")
-    except ValueError as err:
-        print(f"Invalid stock input: {err}")
+    new_stock = get_non_negative_int("New Stock Quantity: ")
+    product.update_stock(new_stock)
+    print("Stock updated successfully!")
 
 
 def search_product_cli(inventory: Inventory) -> None:
@@ -515,7 +557,8 @@ def main() -> None:
         print("5. Remove Product")
         print("6. Create Order")
         print("7. Save Inventory")
-        print("8. Exit")
+        print("8. Load Products from CSV")
+        print("9. Exit")
         print("----------------------------")
 
         choice = input("Enter option: ").strip()
@@ -537,6 +580,12 @@ def main() -> None:
             save_inventory(inventory)
             print("Inventory saved successfully to inventory.json.")
         elif choice == "8":
+            path = input("Enter CSV file path (default: products.csv): ").strip()
+            if not path:
+                path = "products.csv"
+            default_supplier = Supplier("SUP001", "Default Supplier", "info@supplier.com")
+            load_products(path, inventory, default_supplier)
+        elif choice == "9":
             print("\nSaving inventory before exit...")
             save_inventory(inventory)
             print("Inventory saved successfully.")
@@ -544,7 +593,7 @@ def main() -> None:
             print("Program terminated.")
             break
         else:
-            print("Invalid option. Please enter a number between 1 and 8.")
+            print("Invalid option. Please enter a number between 1 and 9.")
 
 
 if __name__ == "__main__":
