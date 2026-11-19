@@ -2,25 +2,118 @@
    {
       "id": "P001",
       "name": "Keyboard",
-      "price": 20.0,
-      "stock": 10,
+      "price": 25.0,
+      "stock": 15,
+      "supplier": {
+         "supplier_id": "S001",
+         "name": "Challenger",
+         "contact_email": "sales@challenger.com"
+      },
       "product_type": "physical",
-      "weight": 4.0
+      "weight": 2.5
    },
    {
       "id": "P002",
-      "name": "Windows 11 OS",
-      "price": 100.0,
+      "name": "Wireless Mouse",
+      "price": 45.0,
+      "stock": 19,
+      "supplier": {
+         "supplier_id": "S001",
+         "name": "Challenger",
+         "contact_email": "sales@challenger.com"
+      },
+      "product_type": "physical",
+      "weight": 0.5
+   },
+   {
+      "id": "D001",
+      "name": "Windows 11 Pro OS License",
+      "price": 150.0,
       "stock": 100,
+      "supplier": {
+         "supplier_id": "S001",
+         "name": "Microsoft",
+         "contact_email": "sales@microsoft.com"
+      },
       "product_type": "digital",
-      "download_size": 50000.0
+      "download_size": 100000.0
+   },
+   {
+      "id": "P001",
+      "name": "Desk Lamp",
+      "price": 25.0,
+      "stock": 10,
+      "supplier": {
+         "supplier_id": "SUP001",
+         "name": "Default Supplier",
+         "contact_email": "info@supplier.com"
+      },
+      "product_type": "physical",
+      "weight": 0.0
+   },
+   {
+      "id": "D001",
+      "name": "Photo Editor",
+      "price": 49.9,
+      "stock": 100,
+      "supplier": {
+         "supplier_id": "SUP001",
+         "name": "Default Supplier",
+         "contact_email": "info@supplier.com"
+      },
+      "product_type": "digital",
+      "download_size": 0.0
    },
    {
       "id": "P003",
-      "name": "Wireless Mouse",
-      "price": 30.0,
-      "stock": 13,
+      "name": "Monitor Stand",
+      "price": 39.5,
+      "stock": 7,
+      "supplier": {
+         "supplier_id": "SUP001",
+         "name": "Default Supplier",
+         "contact_email": "info@supplier.com"
+      },
       "product_type": "physical",
-      "weight": 0.5
+      "weight": 0.0
+   },
+   {
+      "id": "P001",
+      "name": "Desk Lamp",
+      "price": 25.0,
+      "stock": 10,
+      "supplier": {
+         "supplier_id": "SUP001",
+         "name": "Default Supplier",
+         "contact_email": "info@supplier.com"
+      },
+      "product_type": "physical",
+      "weight": 0.0
+   },
+   {
+      "id": "D001",
+      "name": "Photo Editor",
+      "price": 49.9,
+      "stock": 100,
+      "supplier": {
+         "supplier_id": "SUP001",
+         "name": "Default Supplier",
+         "contact_email": "info@supplier.com"
+      },
+      "product_type": "digital",
+      "download_size": 0.0
+   },
+   {
+      "id": "P003",
+      "name": "Monitor Stand",
+      "price": 39.5,
+      "stock": 7,
+      "supplier": {
+         "supplier_id": "SUP001",
+         "name": "Default Supplier",
+         "contact_email": "info@supplier.com"
+      },
+      "product_type": "physical",
+      "weight": 0.0
    }
 ]

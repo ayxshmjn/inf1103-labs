@@ -1,3 +1,51 @@
+commit d47bc99998b4ad62a605b1c7144b1e2734d878db
+Author: Ayush Mahajan <2605673@sit.singaporetech.edu.sg>
+Date:   Thu Nov 19 23:56:13 2026 +0800
+
+    Add input helpers and CSV Product loader with exception handling
+
+commit cdfa7f3d9071126a22106e76fe4e1b8f4f6b0cff
+Author: Ayush Mahajan <2605673@sit.singaporetech.edu.sg>
+Date:   Thu Nov 19 01:49:17 2026 +0800
+
+    Add domain validation for product price, stock, and order quantity
+
+commit f79ba221f1c3d894054b01517818470895caf11a
+Author: Ayush Mahajan <2605673@sit.singaporetech.edu.sg>
+Date:   Thu Nov 19 01:45:13 2026 +0800
+
+    Implement Facotory pattern for creating products
+
+commit 1fbc14468ebe0e416eb23ded01177288e9126285
+Author: Ayush Mahajan <2605673@sit.singaporetech.edu.sg>
+Date:   Thu Nov 19 01:23:56 2026 +0800
+
+    Implement strategy pattern for order discounts
+
+commit 1f3129e63d652f9dac4eb0230da2a1eaccfa8531
+Author: Ayush Mahajan <2605673@sit.singaporetech.edu.sg>
+Date:   Thu Nov 12 17:23:47 2026 +0800
+
+    Final version, checked for LSP and Polymorphism
+
+commit e962e5ea743d25229909bc6613598bdfea81cdfa
+Author: Ayush Mahajan <2605673@sit.singaporetech.edu.sg>
+Date:   Thu Nov 12 16:49:58 2026 +0800
+
+    Added Order and OrderLine alongside checking of Type Hints
+
+commit 0ca2b78069a55d1e93e3da7e825b974ae1e42113
+Author: Ayush Mahajan <2605673@sit.singaporetech.edu.sg>
+Date:   Thu Nov 12 16:11:27 2026 +0800
+
+    Supplier and Product Association alongside Inventory and Product aggregation
+
+commit b7ea4092630e190b7d33d050492529501edae940
+Author: Ayush Mahajan <2605673@sit.singaporetech.edu.sg>
+Date:   Fri Nov 6 16:40:36 2026 +0800
+
+    Updated Log Week 8 Lab
+
 commit f0cc32e7adff190a4801936844f21bd8d9fdcae1
 Author: Ayush Mahajan <2605673@sit.singaporetech.edu.sg>
 Date:   Fri Nov 6 16:39:09 2026 +0800
